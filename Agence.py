@@ -1,12 +1,14 @@
 from voiture import Voiture
 import mysql.connector
-
-import mysql.connector
+from datetime import datetime
 
 class Agence:
-
-    def __init__(self, voitures= []):
-        self.voitures= voitures
+    def __init__(self, voitures=None):
+        if voitures is None:
+            voitures = []
+        self.voitures = voitures
+        
+        # Connect to the MySQL database
         self.db = mysql.connector.connect(
             host="localhost",
             user="root",
@@ -14,36 +16,37 @@ class Agence:
             database="Agence"
         )
 
-    def ajouter_voiture(self):
-        while True:
-            r = input("Voulez-vous ajouter une voiture? Y for yes | N for no ")
-            if r == "Y":
-                mat = input('Entrez matricule: ')
-                if self.rechercher_voiture_par_mat(mat) == False:
-                    print(" Ajouter une voiture ")
-                    v = Voiture()
-                    v.saisir()
+    def afficher_voitures(self):
+        # Execute a SELECT query to retrieve the data from the database table
+        cursor = self.db.cursor()
+        cursor.execute("SELECT * FROM liste_voitures")
 
-                    # Insert the new Voiture object into the MySQL database
-                    cursor = self.db.cursor()
-                    sql = "INSERT INTO voiture (matricule, marque, modele) VALUES (%s, %s, %s)"
-                    val = (v.matricule, v.marque, v.modele)
-                    try:
-                        cursor.execute(sql, val)
-                        self.db.commit()
-                        print(cursor.rowcount, "record inserted.")
-                    except mysql.connector.Error as error:
-                        print("Failed to insert record: {}".format(error))
+        # Check if any rows were returned
+        if cursor.rowcount == 0:
+            print("No cars found in the database.")
+            return
 
-                    r = input("Voulez-vous rajouter une autre voiture? Y for yes | N for no ")
-                else:
-                    print(" Cette Voiture existe déjà ! ")
-            elif r == "N":
-                print('Aucune voiture ajoutée')
-                self.db.close()
-                break
+        # Iterate over the results and create instances of the Voiture class with the retrieved data
+        for row in cursor:
+            v = Voiture(
+                matricule=row[0],
+                marque=row[1],
+                couleur=row[2],
+                date_circulation=datetime.strptime(row[3]),
+                kilometrage=row[4],
+                cylindres=row[5],
+                image=row[6]
+            )
+
+            # Call the afficher() method on each instance to display the data
+            v.afficher()
+
+        # Close the database connection
+        self.db.close()
+
+    
 
 
-
- def __init__(self, voitures= []):
-        self.voitures= voitures
+if __name__=='__main__':
+    a=Agence()
+    a.afficher_voitures()
