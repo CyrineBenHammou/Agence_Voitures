@@ -1,7 +1,6 @@
 from datetime import datetime
 from PIL import Image
-import io
-import matplotlib.pyplot as plt
+
 
 
 
@@ -24,18 +23,19 @@ class Voiture:
         self.date_circulation = datetime.strptime(self.date_circulation, "%d/%m/%Y") 
         self.kilometrage = input("Entrez le kilometrage")
         self.cylindres = input("Entrez le nombre de cylindres")
-        image_path = input("Entrez le chemin de l'image")
-        with open(image_path, 'rb') as f:
-            self.image = f.read()
+        self.image = input("Entrez le chemin de l'image")
+        
     
 
     def afficher(self):
 
         print('{0:<15s}|{1:<8s}|{1:<8s}|{2:<15s}|{3:<8s}|{4:<4s}'.format(self.matricule,self.marque,self.date_circulation.strftime("%d/%m/%Y"),self.kilometrage,self.cylindres))
         if self.image:
-            img = Image.open(io.BytesIO(self.image))
-            plt.imshow(img)
-            plt.show()
+            try:
+                img = Image.open(self.image)
+                img.show()
+            except:
+                print(f"Unable to load image from {self.image}")
 
 
 if __name__=='__main__':
