@@ -59,29 +59,37 @@ class Agence:
     
     
     def ajouter_voiture(self):
-        matricule = input("Matricule: ")
-        
-        if self.rechercher_voiture(matricule):
-            print(f"A car with matricule {matricule} already exists in the database.")
-        else:
-            # Prompt the user for the details of the new car
-            v = Voiture()
-            v.saisir()
+        r = input ("Voulez-vous ajouter une voiture? Y for yes | N for no ")
+        while True:
+            if r == "Y":
+                matricule = input("Matricule: ")
+                
+                if self.rechercher_voiture(matricule):
+                    print(f"A car with matricule {matricule} already exists in the database.")
+                    break
+                else:
+                    # Prompt the user for the details of the new car
+                    v = Voiture()
+                    v.saisir()
 
-            # Execute an INSERT query to add the new car to the database
-            cursor = self.db.cursor(buffered=True)
-            query = "INSERT INTO liste_voitures (matricule, marque, couleur, date_circulation, kilometrage, cylindre, image) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-            values = (v.matricule, v.marque, v.couleur, v.date_circulation, v.kilometrage, v.cylindres, v.image)
-            cursor.execute(query, values)
+                    # Execute an INSERT query to add the new car to the database
+                    cursor = self.db.cursor(buffered=True)
+                    query = "INSERT INTO liste_voitures (matricule, marque, couleur, date_circulation, kilometrage, cylindre, image) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+                    values = (v.matricule, v.marque, v.couleur, v.date_circulation, v.kilometrage, v.cylindres, v.image)
+                    cursor.execute(query, values)
 
-            print(f"The car with matricule {v.matricule} has been added to the database.")
+                    print(f"The car with matricule {v.matricule} has been added to the database.")
 
-            # Close the cursor and commit the transaction
-            cursor.close()
-            self.db.commit()
+                    # Close the cursor and commit the transaction
+                    cursor.close()
+                    self.db.commit()
 
-        # Close the database connection
-        self.db.close()
+                # Close the database connection
+                self.db.close()   
+
+            elif r == "N":
+                print('Aucune voiture ajouté')
+ 
 
     def supprimer_voiture(self):
         matricule = input("Enter the matricule of the car to delete: ")
@@ -100,12 +108,33 @@ class Agence:
             # Close the cursor and commit the transaction
             cursor.close()
             self.db.commit()
+            
+            # Close the database connection
+            self.db.close()
+    
+    def trier_selon_date_circulation(self):
+            
 
-        # Close the database connection
-        self.db.close()
+        # Fetch data from the database and create Voiture objects
+        cursor = self.db.cursor()
+        cursor.execute("SELECT * FROM liste_voitures")
+        rows = cursor.fetchall()
+                    
+        for row in rows:
+            v = Voiture(row[0], row[1], row[2], row[3], row[4], row[5], row[6])
+            self.voitures.append(v)
+                    
+        # Sort the list of cars according to their date of circulation
+        self.voitures.sort( key=lambda v: v.date_circulation)
+        
+    def get_voiture_plus_recente(self):
+        self.trier_selon_date_circulation()
+        print("La voiture la plus récente est:")
+        self.voitures[-1].afficher_voiture()
 
-if __name__=='__main__':
-    a=Agence()
-    #a.rechercher_voiture('123')
-    #a.supprimer_voiture()
-    a.ajouter_voiture()
+    def get_voiture_plus_ancienne(self):
+         self.trier_selon_date_circulation()
+         print("La voiture la plus ancienne est:")
+         self.voitures[0].afficher_voiture()
+
+

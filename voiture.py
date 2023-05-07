@@ -21,15 +21,15 @@ class Voiture:
         self.couleur = input("Entrez la couleur")
         self.date_circulation = input("Entrez la date_circulation") 
         self.date_circulation = datetime.strptime(self.date_circulation, "%d/%m/%Y") 
-        self.kilometrage = input("Entrez le kilometrage")
-        self.cylindres = input("Entrez le nombre de cylindres")
+        self.kilometrage = int(input("Entrez le kilometrage"))
+        self.cylindres = int(input("Entrez le nombre de cylindres"))
         self.image = input("Entrez le chemin de l'image")
         
     
 
     def afficher(self):
 
-        print('{0:<15s}|{1:<8s}|{1:<8s}|{2:<15s}|{3:<8s}|{4:<4s}'.format(self.matricule,self.marque,self.date_circulation.strftime("%d/%m/%Y"),self.kilometrage,self.cylindres))
+        print('{0:<15s}|{1:<8s}|{1:<8s}|{2:<15s}|{3:<8d}|{4:<4d}'.format(self.matricule,self.marque,self.date_circulation.strftime("%d/%m/%Y"),self.kilometrage,self.cylindres))
         if self.image:
             try:
                 img = Image.open(self.image)
@@ -38,7 +38,3 @@ class Voiture:
                 print(f"Unable to load image from {self.image}")
 
 
-if __name__=='__main__':
-    v = Voiture()
-    v.saisir()
-    v.afficher()
