@@ -61,14 +61,14 @@ class Agence:
             if r == "Y":
                 matricule = input("Matricule: ")
                 if self.rechercher_voiture(matricule):
-                    print(f"A car with matricule {matricule} already exists in the database.")
+                    print(f"La voiture portant la matricule {matricule} existe déjà.")
                     break
                 else:
-                    # Prompt the user for the details of the new car
+                    # Saisie des données de la voiture
                     v = Voiture()
                     v.saisir()
 
-                    # Execute an INSERT query to add the new car to the database
+                    # Ajouter voiture dans la base
                     cursor = self.db.cursor(buffered=True)
                     query = "INSERT INTO liste_voitures (matricule, marque, couleur, date_circulation, kilometrage, cylindre, image) VALUES (%s, %s, %s, %s, %s, %s, %s)"
                     values = (v.matricule, v.marque, v.couleur, v.date_circulation, v.kilometrage, v.cylindres, v.image)
@@ -76,7 +76,7 @@ class Agence:
 
                     print(f"La voiture portant la matricule {v.matricule} a été ajoutée.")
 
-                    # Close the cursor and commit the transaction
+                    # Fermer cursor et commit la transaction
                     cursor.close()
                     self.db.commit()
                     r= input("Voulez-vous rajouter une autre voiture? Y for yes | N for no") 
@@ -85,23 +85,23 @@ class Agence:
                 print('Aucune voiture ajoutée')
                 break
 
-            # Close the database connection
+            # Déconnexion de la base
             self.db.close()
 
 
     def supprimer_voiture(self):
-        matricule = input("Enter the matricule of the car to delete: ")
+        matricule = input("Entre la matricule de la voiture que vous voulez supprimer: ")
 
         if self.rechercher_voiture(matricule)==False:
-            print(f"A car with matricule {matricule} doesn't exist in the database.")
+            print(f"La voiture portant la matricule {matricule} n'existe pas.")
         else:
-            # Execute a DELETE query to remove the car from the database
+            # Supprimer la voiture de la base de données
             cursor = self.db.cursor(buffered=True)
             query = "DELETE FROM liste_voitures WHERE Matricule=%s"
             values = (matricule,)
             cursor.execute(query, values)
 
-            print(f"The car with matricule {matricule} has been deleted from the database.")
+            print(f"La voiture portant la matricule {matricule} a été supprimer de la base de données.")
 
             # Close the cursor and commit the transaction
             cursor.close()
@@ -111,35 +111,21 @@ class Agence:
             self.db.close()
     
     def trier_selon_date_circulation(self):
-            
+        self.get_data_DB()
 
-        # Fetch data from the database and create Voiture objects
-        cursor = self.db.cursor()
-        cursor.execute("SELECT * FROM liste_voitures")
-        rows = cursor.fetchall()
-                    
-        for row in rows:
-            v = Voiture(row[0], row[1], row[2], row[3], row[4], row[5], row[6])
-            self.voitures.append(v)
-                    
-        # Sort the list of cars according to their date of circulation
-        self.voitures.sort( key=lambda v: v.date_circulation)
+        #Fonction de trie
+        self.voitures.sort(key=lambda v: v.date_circulation)
         
     def get_voiture_plus_recente(self):
+        self.get_data_DB()
         self.trier_selon_date_circulation()
         print("La voiture la plus récente est:")
-        self.voitures[-1].afficher_voiture()
+        self.voitures[-1].afficher()
 
     def get_voiture_plus_ancienne(self):
          self.trier_selon_date_circulation()
          print("La voiture la plus ancienne est:")
-         self.voitures[0].afficher_voiture()
+         self.voitures[0].afficher()
 
 
-if __name__=='__main__':
-    a=Agence()
-    a.get_data_DB()
-    #a.ajouter_voiture()
-    a.afficher_voitures()
-    
     
