@@ -13,57 +13,53 @@ class Agence:
             host="localhost",
             user="root",
             password="",
-            database="Agence",
+            database="agence",
             consume_results=True
         )
-
-    def afficher_voitures(self):
-        # Execute a SELECT query to retrieve the data from the database table
+        
+    def get_data_DB(self):
+        
+        # Obtention de la data à partir de la base de données
         cursor = self.db.cursor()
         cursor.execute("SELECT * FROM liste_voitures")
 
-        # Check if any rows were returned
-        if cursor.rowcount == 0:
-            print("No cars found in the database.")
-            return
-
-        # Iterate over the results and create instances of the Voiture class with the retrieved data
+        # Création d'une instance de voiture 
         for row in cursor:
-            v = Voiture(
-                matricule=row[0],
-                marque=row[1],
-                couleur=row[2],
-                date_circulation=datetime.strptime(row[3]),
-                kilometrage=row[4],
-                cylindres=row[5],
-                image=row[6]
-            )
+                v = Voiture(
+                    matricule=row[0],
+                    marque=row[1],
+                    couleur=row[2],
+                    date_circulation=row[3],
+                    kilometrage=row[4],
+                    cylindres=row[5],
+                    image=row[6]
+                )
+                self.voitures.append(v)
 
-            # Call the afficher() method on each instance to display the data
-            v.afficher()
+        # Déconnexion de la base de données
+        cursor.close()
 
-        # Close the database connection
-        self.db.close()
+    def afficher_voitures(self):
+        
+        self.get_data_DB()
+        if self.voitures:
+            for V in self.voitures:
+                print(V.afficher())
+        else:
+            print('Pas de voiture')
 
     def rechercher_voiture(self, matricule):
-            trouve = False
-            # Execute a SELECT query to retrieve the data for the given matricule
-            cursor = self.db.cursor(buffered=True)
-            cursor.execute("SELECT Matricule FROM liste_voitures WHERE Matricule=%s", (matricule,))
-
-            # Check if a row was returned
-            if cursor.rowcount == 0:
-                print(f"No car with matricule {matricule} found in the database.")
-            else: trouve = True
-            return trouve
-    
+        self.get_data_DB()
+        for v in self.voitures:
+            if v.matricule == matricule:
+                return True
+        return False
     
     def ajouter_voiture(self):
-        r = input ("Voulez-vous ajouter une voiture? Y for yes | N for no ")
+        r = input("Voulez-vous ajouter une voiture? Y for yes | N for no ")
         while True:
             if r == "Y":
                 matricule = input("Matricule: ")
-                
                 if self.rechercher_voiture(matricule):
                     print(f"A car with matricule {matricule} already exists in the database.")
                     break
@@ -78,18 +74,20 @@ class Agence:
                     values = (v.matricule, v.marque, v.couleur, v.date_circulation, v.kilometrage, v.cylindres, v.image)
                     cursor.execute(query, values)
 
-                    print(f"The car with matricule {v.matricule} has been added to the database.")
+                    print(f"La voiture portant la matricule {v.matricule} a été ajoutée.")
 
                     # Close the cursor and commit the transaction
                     cursor.close()
                     self.db.commit()
-
-                # Close the database connection
-                self.db.close()   
+                    r= input("Voulez-vous rajouter une autre voiture? Y for yes | N for no") 
 
             elif r == "N":
-                print('Aucune voiture ajouté')
- 
+                print('Aucune voiture ajoutée')
+                break
+
+            # Close the database connection
+            self.db.close()
+
 
     def supprimer_voiture(self):
         matricule = input("Enter the matricule of the car to delete: ")
@@ -138,3 +136,10 @@ class Agence:
          self.voitures[0].afficher_voiture()
 
 
+if __name__=='__main__':
+    a=Agence()
+    a.get_data_DB()
+    #a.ajouter_voiture()
+    a.afficher_voitures()
+    
+    

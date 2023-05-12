@@ -29,12 +29,11 @@ class Voiture:
 
     def afficher(self):
 
-        print('{0:<15s}|{1:<8s}|{1:<8s}|{2:<15s}|{3:<8d}|{4:<4d}'.format(self.matricule,self.marque,self.date_circulation.strftime("%d/%m/%Y"),self.kilometrage,self.cylindres))
+        print('{0:<15s}|{1:<8s}|{1:<8s}|{2:<15s}|{3:<8s}|{4:<4d}'.format(self.matricule,self.marque,self.couleur,self.date_circulation.strftime("%d/%m/%Y"),self.kilometrage,self.cylindres))
         if self.image:
             try:
-                img = Image.open(self.image)
-                img.show()
+                Image.open(self.image).show()
             except:
-                print(f"Unable to load image from {self.image}")
+                print(f"Erreur lors du chargement {self.image}")
 
 
