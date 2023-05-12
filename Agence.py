@@ -56,13 +56,10 @@ class Agence:
         return False
     
     def ajouter_voiture(self):
-        r = input("Voulez-vous ajouter une voiture? Y for yes | N for no ")
-        while True:
-            if r == "Y":
                 matricule = input("Matricule: ")
                 if self.rechercher_voiture(matricule):
                     print(f"La voiture portant la matricule {matricule} existe déjà.")
-                    break
+                    
                 else:
                     # Saisie des données de la voiture
                     v = Voiture()
@@ -81,12 +78,8 @@ class Agence:
                     self.db.commit()
                     r= input("Voulez-vous rajouter une autre voiture? Y for yes | N for no") 
 
-            elif r == "N":
-                print('Aucune voiture ajoutée')
-                break
-
-            # Déconnexion de la base
-            self.db.close()
+                # Déconnexion de la base
+                self.db.close()
 
 
     def supprimer_voiture(self):
