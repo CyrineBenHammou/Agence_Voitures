@@ -1,6 +1,6 @@
 from voiture import Voiture
 import mysql.connector
-from datetime import datetime
+import pandas as pd
 
 class Agence:
     def __init__(self, voitures=None):
@@ -120,5 +120,20 @@ class Agence:
          print("La voiture la plus ancienne est:")
          self.voitures[0].afficher()
 
+    def to_df(self):
+        self.get_data_DB()
+        data = {'Matricule': [v.matricule for v in self.voitures],
+                'Marque': [v.marque for v in self.voitures],
+                'Couleur': [v.couleur for v in self.voitures],
+                'Date de circulation': [v.date_circulation for v in self.voitures],
+                'Kilométrage': [v.kilometrage for v in self.voitures],
+                'Cylindres': [v.cylindres for v in self.voitures]}
+        Voitures_df = pd.DataFrame(data)
+        return Voitures_df
+
+if __name__=='__main__':
+    a=Agence()
+    df=a.to_df()
+    print(df)
 
     
