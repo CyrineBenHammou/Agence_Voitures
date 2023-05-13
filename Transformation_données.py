@@ -7,24 +7,14 @@ from sklearn.decomposition import  PCA
 
 class TransformationVoiture(BaseEstimator,TransformerMixin):
 
-    def __init__(self,date_to='annee') :
-    # Hyperparametere 2 : date_to
+    def __init__(self,date_to='annee'):
+    # Hyperparametere : date_to
         self.date_to = date_to
-        self.ohe = OneHotEncoder(sparse=False)
-        self.ss = StandardScaler()     
+    
 
     def fit(self, X, y=None):
         X_=X.copy()
-
-        # parametere : objet One Hot Encoder
-        
-        self.ohe.fit(X_[['marque', 'couleur']])
-
-        # parametre : objet Standard Scaler
-        
-        self.ss.fit()
-        
-        return self 
+        return self
     
     def transform(self, X, y=None):
 
@@ -45,24 +35,25 @@ class TransformationVoiture(BaseEstimator,TransformerMixin):
         # suppression de la colonne date_circulation
         X_ = X_.drop(columns=['date_circulation'], axis=1)
 
-        # transform 'marque' column to one-hot encoding
-        marque_encoded=self.ohe.transform(X_[['marque']])
-        df_marque = pd.DataFrame(marque_encoded.toarray(), 
-                         columns=['marque_'+str(cat) for cat in self.ohe.categories_[0]],
-                         index=X_.index)
-        X_=pd.concat([X_,df_marque], axis=1)
-        X_.drop('marque', axis=1, inplace=True, errors='ignore')
+        # transformation de la colonne marque en one hot encoding
+        OHE = OneHotEncoder()
+        transformed = OHE.fit_transform(X_[['marque']])
+        X_.drop(columns = ['marque'],inplace=True)
+        X_[OHE.categories_[0]] = transformed.toarray()
 
-        # transform 'couleur' column to one-hot encoding
-        couleur_encoded=self.ohe.transform(X_[['couleur']])
-        df_couleur = pd.DataFrame(couleur_encoded.toarray(), 
-                          columns=['couleur_'+str(cat) for cat in self.ohe.categories_[0]],
-                          index=X_.index)
-        X_=pd.concat([X_,df_couleur], axis=1)
-        X_.drop('couleur', axis=1, inplace=True, errors='ignore')
-
+        # transformation de la colonne couleur en one hot encoding
+        transformed = OHE.fit_transform(X_[['couleur']])
+        X_.drop(columns = ['couleur'],inplace=True)
+        X_[OHE.categories_[0]] = transformed.toarray()
         
         #Normalisation des données
-        X_=self.ss.transform(X_)
+        ss=StandardScaler()
+        ss.fit(X_)
+        X_=ss.transform(X_)
 
-        return X_ 
+        #Reduction des dimensions 
+        pca=PCA(n_components=2)
+        pca.fit(X_)
+        X_=pca.transform(X_)
+        
+        return X_
