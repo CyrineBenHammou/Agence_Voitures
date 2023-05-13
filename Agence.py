@@ -130,10 +130,25 @@ class Agence:
                 'Cylindres': [v.cylindres for v in self.voitures]}
         Voitures_df = pd.DataFrame(data)
         return Voitures_df
+    
+    def V_requete(self):
+        v = Voiture()
+        v.saisir()
+        data = {
+            'Matricule': v.matricule,
+            'Marque': v.marque,
+            'Couleur': v.couleur,
+            'Date_circulation': v.date_circulation,
+            'Kilométrage': v.kilometrage,
+            'Cylindres': v.cylindres
+        }
+        
+        return data
 
 if __name__=='__main__':
     a=Agence()
     df=a.to_df()
-    print(df)
 
+    v = a.V_requete()
+    df_ = df.append(v, ignore_index=True)
     
