@@ -2,7 +2,7 @@ from sklearn.base import BaseEstimator,TransformerMixin
 import pandas as pd
 import datetime
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
-from sklearn.decomposition import  PCA
+
 
 
 class TransformationVoiture(BaseEstimator,TransformerMixin):
@@ -50,10 +50,5 @@ class TransformationVoiture(BaseEstimator,TransformerMixin):
         ss=StandardScaler()
         ss.fit(X_)
         X_=ss.transform(X_)
-
-        #Reduction des dimensions 
-        pca=PCA(n_components=2)
-        pca.fit(X_)
-        X_=pca.transform(X_)
         
         return X_
