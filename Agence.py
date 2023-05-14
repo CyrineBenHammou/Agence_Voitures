@@ -125,9 +125,10 @@ class Agence:
         data = {'Matricule': [v.matricule for v in self.voitures],
                 'Marque': [v.marque for v in self.voitures],
                 'Couleur': [v.couleur for v in self.voitures],
-                'Date de circulation': [v.date_circulation for v in self.voitures],
-                'Kilométrage': [v.kilometrage for v in self.voitures],
-                'Cylindres': [v.cylindres for v in self.voitures]}
+                'Date_circulation': [v.date_circulation for v in self.voitures],
+                'Kilometrage': [v.kilometrage for v in self.voitures],
+                'Cylindres': [v.cylindres for v in self.voitures],
+                'Image': [v.image for v in self.voitures]}
         Voitures_df = pd.DataFrame(data)
         return Voitures_df
     
@@ -139,7 +140,7 @@ class Agence:
             'Marque': v.marque,
             'Couleur': v.couleur,
             'Date_circulation': v.date_circulation,
-            'Kilométrage': v.kilometrage,
+            'Kilometrage': v.kilometrage,
             'Cylindres': v.cylindres
         }
         
