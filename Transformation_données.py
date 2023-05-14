@@ -25,7 +25,8 @@ class TransformationVoiture(BaseEstimator,TransformerMixin):
 
         # transformation de la colonne date_circulation en age
         X_['Date_circulation'] = pd.to_datetime(X_['Date_circulation'])
-        X_['Age'] = datetime.datetime.now().year - X_['Date_circulation'].dt.year
+        X_['age'] = datetime.datetime.now().year - X_['Date_circulation'].dt.year
+
 
         # suppression de la colonne date_circulation
         X_ = X_.drop(columns=['Date_circulation'], axis=1)
