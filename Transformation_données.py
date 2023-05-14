@@ -21,31 +21,29 @@ class TransformationVoiture(BaseEstimator,TransformerMixin):
         X_=X.copy()
 
         # suppression de colonne matricule
-        X_ = X_.drop(columns=['matricule'], axis=1)
+        X_ = X_.drop(columns=['Matricule'], axis=1)
 
         # transformation de la colonne date_circulation en age
-        X_['date_circulation'] = pd.to_datetime(X_['date_circulation'])
-        if self.date_to=='annee':
-            X_['annee']=X_['date_circulation'].apply(lambda date : date.year)
-        elif self.date_to=='age':
-            X_['age']=X_['date_circulation'].apply(lambda date : datetime.now().year - date.year)
-
-        
+        X_['Date_circulation'] = pd.to_datetime(X_['Date_circulation'])
+        X_['age'] = datetime.datetime.now().year - X_['Date_circulation'].dt.year
 
         # suppression de la colonne date_circulation
-        X_ = X_.drop(columns=['date_circulation'], axis=1)
+        X_ = X_.drop(columns=['Date_circulation'], axis=1)
+
 
         # transformation de la colonne marque en one hot encoding
         OHE = OneHotEncoder()
-        transformed = OHE.fit_transform(X_[['marque']])
-        X_.drop(columns = ['marque'],inplace=True)
+        transformed = OHE.fit_transform(X_[['Marque']])
+        X_.drop(columns = ['Marque'],inplace=True)
         X_[OHE.categories_[0]] = transformed.toarray()
 
+
         # transformation de la colonne couleur en one hot encoding
-        transformed = OHE.fit_transform(X_[['couleur']])
-        X_.drop(columns = ['couleur'],inplace=True)
+        transformed = OHE.fit_transform(X_[['Couleur']])
+        X_.drop(columns = ['Couleur'],inplace=True)
         X_[OHE.categories_[0]] = transformed.toarray()
         
+
         #Normalisation des données
         ss=StandardScaler()
         ss.fit(X_)
