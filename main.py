@@ -2,6 +2,9 @@ from Agence import Agence
 from Transformation_données import TransformationVoiture
 from Transformation_Images import TransformationImageVoiture
 from Recherche_similarite import Recherche_par_similarité
+from Transformation_text import TransformationVoitureTexte
+from Recherche_texte import Recherche_par_similaritétxt
+import os
 
 
 
@@ -67,8 +70,38 @@ if __name__ == '__main__':
 
 
         elif option == '3':
-        # do something for option 2
-            pass
+            Trans_text = TransformationVoitureTexte()
+
+            dir_path = os.getcwd()
+            data_path=dir_path+'\\Txt_voiture'
+            nameslist = os.listdir(data_path)
+            Paths=[]
+            for name in nameslist:      
+                text_path = os.path.join(data_path, name) 
+                Paths.append(text_path)
+
+            Corpus = []
+            for path in Paths:
+                with open(path, 'r', encoding='latin-1') as file:
+                    for line in file:
+                        Corpus.append(line)
+
+            
+            Trans_text.fit(Corpus)
+            data = Trans_text.transform(Corpus)
+            data=data.toarray()
+            print(data)
+
+            text_req=input('Donnez une description de la voiture')
+            text_req= Trans_text.transform([text_req])
+            text_req=text_req.toarray()
+            print(text_req)
+
+            
+            Rech= Recherche_par_similaritétxt()
+            d = Rech.calcule_distance(text_req,data)
+            print(Rech.trier_distance(d,Corpus))
+            
 
         elif option == '0':
             print('Quitter')

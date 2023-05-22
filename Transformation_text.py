@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
     Corpus = []
     for path in Paths:
-        with open(path, 'r') as file:
+        with open(path, 'r', encoding='latin-1') as file:
             for line in file:
                 Corpus.append(line)
     
