@@ -19,7 +19,28 @@ if __name__ == '__main__':
 
 
     if option == '1':
-        a.afficher_voitures()
+        print('1: Afficher toute la liste des voitures \n2: Afficher la voiture la plus recente \n2: Afficher la voiture la plus ancienne \n0: Quitter')
+        option = input('Entrez votre choix : ')
+        
+        if option == '1':
+            a.afficher_voitures()
+
+        elif option == '2':
+            a.get_voiture_plus_recente()
+
+        elif option == '3':
+            a.get_voiture_plus_recente()
+        
+        elif option == '0':
+            print('Quitter')
+
+        else:
+            print('Option invalide !')
+
+    elif option == '2':
+        print('1: Ajouter une voiture \n2: Supprimer une voiture \n0: Quitter')
+        option = input('Entrez votre choix : ')
+
 
     elif option == '2':
         print('1: Ajouter une voiture \n2: Supprimer une voiture \n0: Quitter')
@@ -45,7 +66,6 @@ if __name__ == '__main__':
         if option == '1':
             v = a.V_requete()
             df_ = df.append(v, ignore_index=True)
-            print(df_)
             Trans_voit = TransformationVoiture()
             transformed_data = Trans_voit.transform(df_)
             Rech= Recherche_par_similarité()

@@ -109,6 +109,7 @@ class Agence:
         #Fonction de trie
         self.voitures.sort(key=lambda v: v.date_circulation)
         
+        
     def get_voiture_plus_recente(self):
         self.get_data_DB()
         self.trier_selon_date_circulation()
