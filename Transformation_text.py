@@ -1,54 +1,43 @@
 import nltk
 from nltk.corpus import stopwords
-from collections import Counter
-from nltk.tokenize import word_tokenize
 from sklearn.base import BaseEstimator, TransformerMixin
-
+from sklearn.feature_extraction.text import CountVectorizer
+import os
 
 class TransformationVoitureTexte(BaseEstimator, TransformerMixin):
-    def __init__(self, language='frensh'):
-        # Initialisation de la classe
-        self.vocabulaire = set()
-        self.stop_words = set(stopwords.words(language))
-
+    
+    def __init__(self, language='french'):
+        self.stopwords = set(stopwords.words(language))
+        self.cv = CountVectorizer()
+ 
     def fit(self, X, y=None):
-        # Apprentissage du vocabulaire à partir des données d'entraînement
-        for document in X:
-            # Transformer le document en minuscule et le tokenizer en mots
-            tokens = word_tokenize(document.lower())
-            # Enlever les stopwords et les ponctuations
-            tokens = [token for token in tokens if token not in self.stop_words and token.isalpha()]
-            # Ajouter les mots au vocabulaire
-            self.vocabulaire.update(tokens)
-        return self
+        def segmenter(document):
+            tokens = nltk.word_tokenize(document.lower())
+            return [token for token in tokens if token not in self.stopwords and token.isalpha()]
+        
+        self.cv = CountVectorizer(tokenizer=segmenter)
+        self.cv.fit(X)
 
     def transform(self, X, y=None):
-        # Transformation des données en vecteurs BoW
-        BOW = []
-        for document in X:
-            # Compter le nombre d'occurrences de chaque mot dans le document
-            counts = Counter()
-            # Transformer le document en minuscule et le tokenizer en mots
-            tokens = word_tokenize(document.lower())
-            # Enlever les stopwords et les ponctuations
-            tokens = [token for token in tokens if token not in self.stop_words and token.isalpha()]
-            # Compter le nombre d'occurrences de chaque mot dans le document
-            counts.update(tokens)
-            # Créer un dictionnaire avec le mot et son nombre d'occurrences
-            document_index = {mot: counts[mot] for mot in self.vocabulaire}
-            # Ajouter l'index du document à la liste des index
-            BOW.append(document_index)
-        return BOW
+        return self.cv.transform(X)
 
-if __name__ == '__main__' :
-    # Créer une instance de la classe TransformationVoitureTexte
+if __name__ == '__main__':
     transformer = TransformationVoitureTexte()
 
-    # Définir un exemple de document texte décrivant une voiture
-    texte_voiture = ['ma voiture est rapide.', 'La moto est plus rapide que la voiture.']
-    # Transformer le document texte en un vecteur BoW
-    transformer.fit(texte_voiture)
-    vecteur_bow = transformer.transform(texte_voiture)
+    dir_path = os.getcwd()
+    data_path=dir_path+'\\Txt_voiture'
+    nameslist = os.listdir(data_path)
+    Paths=[]
+    for name in nameslist:      
+        text_path = os.path.join(data_path, name) 
+        Paths.append(text_path)
 
-    # Afficher le vecteur BoW
-    print(vecteur_bow)
+    Corpus = []
+    for path in Paths:
+        with open(path, 'r') as file:
+            for line in file:
+                Corpus.append(line)
+    
+    transformer.fit(Corpus)
+    X = transformer.transform(Corpus)
+    print(X.toarray())
